@@ -23,9 +23,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Docker Setup QEMU
-        uses: docker/setup-qemu-action@v4.0.0
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4.0.0
 
@@ -35,7 +32,6 @@ jobs:
           context: .
           file: Dockerfile-frpc
           push: true
-          platforms: linux/amd64,linux/arm64
           tags: |
             jalena/frpc:latest
             jalena/frpc:${{ github.event.inputs.version }}
@@ -48,7 +44,6 @@ jobs:
           context: .
           file: Dockerfile-frps
           push: true
-          platforms: linux/amd64,linux/arm64
           tags: |
             jalena/frps:latest
             jalena/frps:${{ github.event.inputs.version }}
