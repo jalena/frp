@@ -4,17 +4,19 @@ WORKDIR /tmp
 RUN ver=$(wget --no-check-certificate -qO- https://api.github.com/repos/fatedier/frp/releases/latest | grep 'tag_name' | cut -d\" -f4) && \
     frp_ver="frp_$(echo ${ver} | sed -e 's/^[a-zA-Z]//g')" && \
     wget --no-check-certificate "https://github.com/fatedier/frp/releases/download/${ver}/${frp_ver}_linux_amd64.tar.gz" && \
-    tar zxf ${frp_ver}_linux_amd64.tar.gz
+    tar zxf ${frp_ver}_linux_amd64.tar.gz && \
+    mv ${frp_ver}_linux_amd64/frpc /usr/bin/frpc && \
+    mv ${frp_ver}_linux_amd64/frpc.toml /etc/frpc.toml && \
+    chmod +x /usr/bin/frpc
 
 FROM alpine:latest
 LABEL maintainer="jalena@bcsytv.com"
 WORKDIR /root/
 
-COPY --from=builder /tmp/frp_*_linux_amd64/frpc /usr/bin/frpc
-COPY --from=builder /tmp/frp_*_linux_amd64/frpc.toml /etc/frpc.toml
+RUN apk add --no-cache tzdata
 
-RUN apk add --no-cache tzdata \
-   && chmod +x /usr/local/bin/frpc
+COPY --from=builder /usr/bin/frpc /usr/bin/frpc
+COPY --from=builder /etc/frpc.toml /etc/frpc.toml
 
 ENTRYPOINT ["/usr/bin/frpc"]
 CMD ["-c", "/etc/frpc.toml"]
