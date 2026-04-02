@@ -1,10 +1,12 @@
 name: Docker Image CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '镜像版本号'
+        required: true
+        default: 'latest'
 
 jobs:
   build:
@@ -34,7 +36,9 @@ jobs:
           file: Dockerfile-frpc
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: jalena/frpc:latest
+          tags: |
+            jalena/frpc:latest
+            jalena/frpc:${{ github.event.inputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -45,6 +49,8 @@ jobs:
           file: Dockerfile-frps
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: jalena/frps:latest
+          tags: |
+            jalena/frps:latest
+            jalena/frps:${{ github.event.inputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
