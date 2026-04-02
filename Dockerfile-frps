@@ -5,18 +5,16 @@ RUN ver=$(wget --no-check-certificate -qO- https://api.github.com/repos/fatedier
     frp_ver="frp_$(echo ${ver} | sed -e 's/^[a-zA-Z]//g')" && \
     wget --no-check-certificate "https://github.com/fatedier/frp/releases/download/${ver}/${frp_ver}_linux_amd64.tar.gz" && \
     tar zxf ${frp_ver}_linux_amd64.tar.gz && \
-    mv frp/${frp_ver}_linux_amd64/frps /usr/local/bin/frps && \
-    mv frp/${frp_ver}_linux_amd64/frps.toml /etc/frps.toml && \
     chmod +x /usr/local/bin/frps
 
 FROM alpine:latest
 LABEL maintainer="jalena@bcsytv.com"
 WORKDIR /root/
-COPY --from=builder /usr/local/bin/frps /usr/bin/frps
-COPY --from=builder /etc/frps.toml /etc/frps.toml
-RUN apk add --no-cache --update tzdata && \
-    mkdir -p /var/logs/ && \
-    rm -rf /tmp/* /var/cache/apk/*
+COPY --from=builder /tmp/frp_*_linux_amd64/frps /usr/bin/frps
+COPY --from=builder /tmp/frp_*_linux_amd64/frps.toml /etc/frps.toml
+
+RUN apk add --no-cache tzdata \
+    && chmod +x /usr/bin/frps
 
 ENTRYPOINT ["/usr/bin/frps"]
 CMD ["-c", "/etc/frps.toml"]
