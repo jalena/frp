@@ -33,7 +33,10 @@ jobs:
           context: .
           file: Dockerfile-frpc
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: jalena/frpc:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
       - name: Build and push frps
         uses: docker/build-push-action@v7.0.0
@@ -41,4 +44,7 @@ jobs:
           context: .
           file: Dockerfile-frps
           push: true
+          platforms: linux/amd64,linux/arm64
           tags: jalena/frps:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
