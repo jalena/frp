@@ -15,19 +15,26 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@v6.0.3
         
-      - name: Docker Login
-        uses: docker/login-action@v4.0.0
+      - name: Login Docker Hub
+        uses: docker/login-action@v4.2.0
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      - name: Login CNB Registry
+        uses: docker/login-action@v4
+        with:
+          registry: docker.cnb.cool
+          username: cnb
+          password: ${{ secrets.CNB_TOKEN }}
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v4.0.0
+        uses: docker/setup-buildx-action@v4.1.0
 
       - name: Build and push frpc
-        uses: docker/build-push-action@v7.0.0
+        uses: docker/build-push-action@v7.2.0
         with:
           context: .
           file: Dockerfile-frpc
@@ -35,11 +42,12 @@ jobs:
           tags: |
             jalena/frpc:latest
             jalena/frpc:${{ github.event.inputs.version }}
+            docker.cnb.cool/youvigo/base/frpc:${{ github.event.inputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
       - name: Build and push frps
-        uses: docker/build-push-action@v7.0.0
+        uses: docker/build-push-action@v7.2.0
         with:
           context: .
           file: Dockerfile-frps
@@ -47,5 +55,6 @@ jobs:
           tags: |
             jalena/frps:latest
             jalena/frps:${{ github.event.inputs.version }}
+            docker.cnb.cool/youvigo/base/frps:${{ github.event.inputs.version }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
