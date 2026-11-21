@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-ARG ALPINE_VERSION=3.21
+ARG ALPINE_VERSION=3.24
 
 FROM alpine:${ALPINE_VERSION} AS downloader
 ARG FRP_VERSION
